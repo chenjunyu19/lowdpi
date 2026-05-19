@@ -1,0 +1,44 @@
+name: Manual Release
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Compute release version
+        id: version
+        shell: pwsh
+        run: |
+          $tag = "r$(git rev-list --count HEAD).$(git rev-parse --short HEAD)"
+          "tag=$tag" >> $env:GITHUB_OUTPUT
+
+      - name: Set up MSVC environment
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Build executable
+        shell: cmd
+        run: build-msvc.cmd
+
+      - name: Prepare release asset
+        shell: pwsh
+        run: |
+          Copy-Item build\lowdpi.exe "lowdpi-${{ steps.version.outputs.tag }}.exe"
+
+      - name: Publish GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: ${{ steps.version.outputs.tag }}
+          files: lowdpi-${{ steps.version.outputs.tag }}.exe
+          overwrite_files: true
