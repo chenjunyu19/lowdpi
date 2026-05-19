@@ -1,8 +1,6 @@
 @echo off
 setlocal
 
-call "C:\Program Files (x86)\Microsoft Visual Studio\18\BuildTools\Common7\Tools\VsDevCmd.bat" || exit /b 1
-
 if not exist build mkdir build
 
 cl ^
