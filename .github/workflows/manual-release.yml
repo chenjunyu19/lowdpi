@@ -41,3 +41,4 @@ jobs:
           tag_name: ${{ steps.version.outputs.tag }}
           name: ${{ steps.version.outputs.tag }}
           files: lowdpi-${{ steps.version.outputs.tag }}.exe
+          overwrite_files: true
